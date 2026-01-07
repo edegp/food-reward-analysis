@@ -1,0 +1,57 @@
+services:
+  dcm2bids_scaffold:
+    image: unfmontreal/dcm2bids:${VERSION}
+    entrypoint: /venv/bin/dcm2bids_scaffold
+    command: -o /bids/new_scaffold
+
+    volumes:
+      - ${FMRIPREP_DIR:-./fMRIprep}:/bids
+
+  # dcm2bids_helper:
+  #   image: unfmontreal/dcm2bids:${VERSION}
+  #   entrypoint: /venv/bin/dcm2bids_helper
+  #   command: -o /bids/code -d /dicoms
+  #   volumes:
+  #     - ${DICOM_DIR:-./data_food_dicom}:/dicoms:ro
+  #     - ${FMRIPREP_DIR:-./fMRIprep}:/bids
+
+  # dcm2bids_run:
+  #   image: unfmontreal/dcm2bids:${VERSION}
+  #   entrypoint: ''
+  #   command: ['bash', '/app/dcm2bids.sh']
+  #   environment:
+  #     - PARTICIPANTS=${PARTICIPANTS:-}
+  #   volumes:
+  #     - ./scripts/dcm2bids.sh:/app/dcm2bids.sh
+  #     - ./scripts/update_intended_for.sh:/app/update_intended_for.sh
+  #     - ${DICOM_DIR:-./data_food_dicom}:/dicoms:ro
+  #     - ${FMRIPREP_DIR:-./fMRIprep}/bids:/bids
+  #     - ./config:/config
+  # depends_on:
+  #   dcm2bids_helper:
+  #     condition: service_completed_successfully
+
+  fmriprep_run:
+    image: nipreps/fmriprep:25.2.1
+    environment:
+      - PARTICIPANTS=${PARTICIPANTS:-}
+      - KMP_AFFINITY=disabled
+      - NTHREADS=9
+      - OMP_NUM_THREADS=3
+    entrypoint: ['/bin/bash', '-lc']
+    command:
+      - |
+        set -euo pipefail
+        bash /app/scripts/fmriprep_batches.sh
+    stdin_open: true
+    tty: true
+    restart: 'no'
+    volumes:
+      - ${FMRIPREP_DIR:-./fMRIprep}/bids:/data:ro
+      - /Volumes/Transcend/hit/food-brain/fMRIprep/out:/out
+      - ${FMRIPREP_DIR:-./fMRIprep}/work:/work
+      - ./freesurfer/license.txt:/opt/freesurfer/license.txt:ro
+      - ./scripts:/app/scripts:ro
+  # depends_on:
+  #   dcm2bids_run:
+  #     condition: service_completed_successfully

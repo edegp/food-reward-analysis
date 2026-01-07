@@ -1,0 +1,273 @@
+{
+  "convnext": {
+    "selection": {
+      "features_1_blocks": [
+        0,
+        1,
+        2
+      ],
+      "features_3_blocks": [
+        0,
+        1,
+        2
+      ],
+      "features_5_blocks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "features_7_blocks": [
+        0,
+        1,
+        2
+      ],
+      "classifier": true,
+      "behavior_layers": [
+        "convnext.rating_mean"
+      ]
+    },
+    "groups": [
+      {
+        "label": "Initial",
+        "layers": [
+          "convnext.features_1_0_block_4",
+          "convnext.features_1_1_block_4",
+          "convnext.features_1_2_block_4",
+          "convnext.features_3_0_block_4",
+          "convnext.features_3_1_block_4",
+          "convnext.features_3_2_block_4",
+          "convnext.features_5_0_block_4",
+          "convnext.features_5_1_block_4",
+          "convnext.features_5_2_block_4",
+          "convnext.features_5_3_block_4"
+        ]
+      },
+      {
+        "label": "Middle",
+        "layers": [
+          "convnext.features_5_4_block_4",
+          "convnext.features_5_5_block_4",
+          "convnext.features_5_6_block_4",
+          "convnext.features_5_7_block_4",
+          "convnext.features_5_8_block_4",
+          "convnext.features_5_9_block_4",
+          "convnext.features_5_10_block_4",
+          "convnext.features_5_11_block_4",
+          "convnext.features_5_12_block_4",
+          "convnext.features_5_13_block_4"
+        ]
+      },
+      {
+        "label": "Late",
+        "layers": [
+          "convnext.features_5_14_block_4",
+          "convnext.features_5_15_block_4",
+          "convnext.features_5_16_block_4",
+          "convnext.features_5_17_block_4",
+          "convnext.features_5_18_block_4",
+          "convnext.features_5_19_block_4",
+          "convnext.features_5_20_block_4",
+          "convnext.features_5_21_block_4",
+          "convnext.features_5_22_block_4"
+        ]
+      },
+      {
+        "label": "Final",
+        "layers": [
+          "convnext.features_5_23_block_4",
+          "convnext.features_5_24_block_4",
+          "convnext.features_5_25_block_4",
+          "convnext.features_5_26_block_4",
+          "convnext.features_7_0_block_4",
+          "convnext.features_7_1_block_4",
+          "convnext.features_7_2_block_4",
+          "convnext.classifier_1",
+          "convnext.rating_mean"
+        ]
+      }
+    ]
+  },
+  "clip": {
+    "selection": {
+      "stage0_blocks": [
+        0,
+        1,
+        2
+      ],
+      "stage1_blocks": [
+        0,
+        1,
+        2
+      ],
+      "stage2_blocks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "stage3_blocks": [
+        0,
+        1,
+        2
+      ],
+      "head": true,
+      "behavior_layers": [
+        "clip.rating_mean"
+      ]
+    },
+    "groups": [
+      {
+        "label": "Initial",
+        "layers": [
+          "clip.stage0_0",
+          "clip.stage0_1",
+          "clip.stage0_2",
+          "clip.stage1_0",
+          "clip.stage1_1",
+          "clip.stage1_2",
+          "clip.stage2_0",
+          "clip.stage2_1",
+          "clip.stage2_2",
+          "clip.stage2_3"
+        ]
+      },
+      {
+        "label": "Middle",
+        "layers": [
+          "clip.stage2_4",
+          "clip.stage2_5",
+          "clip.stage2_6",
+          "clip.stage2_7",
+          "clip.stage2_8",
+          "clip.stage2_9",
+          "clip.stage2_10",
+          "clip.stage2_11",
+          "clip.stage2_12",
+          "clip.stage2_13"
+        ]
+      },
+      {
+        "label": "Late",
+        "layers": [
+          "clip.stage2_14",
+          "clip.stage2_15",
+          "clip.stage2_16",
+          "clip.stage2_17",
+          "clip.stage2_18",
+          "clip.stage2_19",
+          "clip.stage2_20",
+          "clip.stage2_21",
+          "clip.stage2_22"
+        ]
+      },
+      {
+        "label": "Final",
+        "layers": [
+          "clip.stage2_23",
+          "clip.stage2_24",
+          "clip.stage2_25",
+          "clip.stage2_26",
+          "clip.stage3_0",
+          "clip.stage3_1",
+          "clip.stage3_2",
+          "clip.head",
+          "clip.rating_mean"
+        ]
+      }
+    ]
+  },
+  "vgg": {
+    "selection": {
+      "features_relu": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "avgpool": true,
+      "classifier": true,
+      "behavior_layers": ["vgg.rating_mean"]
+    },
+    "groups": [
+      {
+        "label": "Initial",
+        "layers": [
+          "vgg.features_relu0",
+          "vgg.features_relu1",
+          "vgg.features_relu2",
+          "vgg.features_relu3"
+        ]
+      },
+      {
+        "label": "Middle",
+        "layers": [
+          "vgg.features_relu4",
+          "vgg.features_relu5",
+          "vgg.features_relu6",
+          "vgg.features_relu7"
+        ]
+      },
+      {
+        "label": "Late",
+        "layers": [
+          "vgg.features_relu8",
+          "vgg.features_relu9",
+          "vgg.features_relu10",
+          "vgg.features_relu11"
+        ]
+      },
+      {
+        "label": "Final",
+        "layers": [
+          "vgg.features_relu12",
+          "vgg.avgpool",
+          "vgg.classifier_1",
+          "vgg.classifier_4",
+          "vgg.rating_mean"
+        ]
+      }
+    ]
+  }
+}

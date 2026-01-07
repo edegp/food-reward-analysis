@@ -1,0 +1,359 @@
+version: '3'
+
+vars:
+  EXTERNAL_ROOT: '{{default "/Volumes/Transcend" .EXTERNAL_ROOT}}'
+  DRIVE_ROOT: '/Users/yuhiaoki/Library/CloudStorage/GoogleDrive-dm240001@g.hit-u.ac.jp/マイドライブ'
+
+tasks:
+  # Behavior analysis
+  behavior_analysis:
+    desc: Run behavior analysis
+    dir: scripts/behavior_analysis
+    cmds:
+      - uv run python train.py --csv ../../Food_Behavior/food.pics.database.value.csv --level trial --participant-dir ../../Food_Behavior --feature-set nutrition --question '欲しいですか？' --out ../../results/behavior_analysis
+
+  # Preprocessing
+  preprocess:
+    desc: Run fMRI preprocessing with Docker
+    cmds:
+      - docker-compose up
+
+  preprocess_external:
+    desc: Run preprocessing using derivatives on external drive
+    env:
+      DERIVATIVES_HOST_PATH: '{{.EXTERNAL_ROOT}}/hit/food-brain/fMRIprep/derivatives'
+    cmds:
+      - docker-compose up
+
+  smoothing:
+    desc: Run smoothing in MATLAB
+    cmds:
+      - matlab -nodisplay -batch "cd('/Users/yuhiaoki/dev/hit/food-brain'); run('scripts/preprocess/run_preprocess.m')"
+
+  smoothing_subject:
+    desc: Run smoothing for specific subjects (e.g., task smoothing_subject -- 31)
+    cmds:
+      - matlab -batch "addpath('/Users/yuhiaoki/dev/hit/food-brain/scripts/preprocess'); run_smoothing_subject({{.CLI_ARGS}});"
+
+  # fMRI Analysis
+  fmri_analysis:
+    desc: Run first-level fMRI analysis (behavior GLM)
+    cmds:
+      - matlab -batch "cd('/Users/yuhiaoki/dev/hit/food-brain'); run('scripts/behavior_glm/main/run_first_level.m')"
+
+  lss_glm:
+    desc: Run LSS GLM for all 31 subjects (serial execution)
+    cmds:
+      - matlab -batch "addpath('scripts/behavior_glm/lss_model'); addpath('scripts/common/first_level'); run_lss_glm(1, 31);"
+
+  lss_glm_range:
+    desc: Run LSS GLM for specific subject range (e.g., task lss_glm_range -- 1,10)
+    cmds:
+      - matlab -batch "addpath('scripts/behavior_glm/lss_model'); addpath('scripts/common/first_level'); run_lss_glm({{.CLI_ARGS}});"
+
+  lss_glm_parallel:
+    desc: Run LSS GLM for all 31 subjects (parallel execution - 2 batches)
+    cmds:
+      - bash scripts/behavior_glm/lss_model/run_lss_parallel.sh
+
+  # Behavior GLM Cluster-level FWE (proper RFT)
+  behavior_cluster_fwe_compute:
+    desc: Compute cluster-level FWE using SPM RFT (run before visualization)
+    cmds:
+      - matlab -batch "addpath('scripts/behavior_glm/visualization'); run_cluster_fwe('glm_001p_6');"
+
+  behavior_cluster_fwe_compute_all:
+    desc: Compute cluster-level FWE for all behavior GLM models
+    cmds:
+      - matlab -batch "addpath('scripts/behavior_glm/visualization'); run_cluster_fwe('glm_001p_6');"
+      - matlab -batch "addpath('scripts/behavior_glm/visualization'); run_cluster_fwe('glm_lum');"
+      - matlab -batch "addpath('scripts/behavior_glm/visualization'); run_cluster_fwe('glm_rgb');"
+      - matlab -batch "addpath('scripts/behavior_glm/visualization'); run_cluster_fwe('glm_nutri');"
+      - matlab -batch "addpath('scripts/behavior_glm/visualization'); run_cluster_fwe('glm_rgb_nutri');"
+
+  behavior_cluster_fwe_viz:
+    desc: Visualize pre-computed cluster-level FWE results
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/behavior_glm/visualization/visualize_cluster_fwe.py --model glm_001p_6
+
+  behavior_roi_analysis:
+    desc: Run ROI analysis for behavior GLM (MarsBar)
+    cmds:
+      - matlab -batch "addpath('scripts/behavior_glm/roi'); marsbar_roi_analysis;"
+
+  behavior_roi_barplot:
+    desc: Create ROI effect size barplot for behavior GLM
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/behavior_glm/visualization/plot_roi_effectsize_clean.py
+
+  behavior_cluster_fwe_viz_all:
+    desc: Visualize cluster-level FWE results for all behavior GLM models
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/behavior_glm/visualization/visualize_cluster_fwe.py --model glm_001p_6
+      - uv run --project scripts/dnn_analysis python scripts/behavior_glm/visualization/visualize_cluster_fwe.py --model glm_lum
+      - uv run --project scripts/dnn_analysis python scripts/behavior_glm/visualization/visualize_cluster_fwe.py --model glm_rgb
+      - uv run --project scripts/dnn_analysis python scripts/behavior_glm/visualization/visualize_cluster_fwe.py --model glm_nutri
+      - uv run --project scripts/dnn_analysis python scripts/behavior_glm/visualization/visualize_cluster_fwe.py --model glm_rgb_nutri
+
+  # Google Drive sync
+  sync_gdrive:
+    desc: Sync to Google Drive
+    cmds:
+      - ./scripts/utils/symlink_to_gdrive.sh --drive-root "{{.DRIVE_ROOT}}" --subject sub-01
+
+  restore_gdrive:
+    desc: Restore from Google Drive
+    cmds:
+      - ./scripts/utils/symlink_to_gdrive.sh --restore --drive-root "{{.DRIVE_ROOT}}"
+
+  # External drive management
+  derivatives_to_external:
+    desc: Move fMRIprep derivatives to external drive
+    cmds:
+      - ./scripts/utils/move_derivatives_to_external.sh --external-root {{.EXTERNAL_ROOT}}
+
+  derivatives_restore:
+    desc: Restore fMRIprep derivatives from external drive
+    cmds:
+      - ./scripts/utils/move_derivatives_to_external.sh --restore --external-root {{.EXTERNAL_ROOT}}
+
+  copy_confounds:
+    desc: Copy confounds files from external drive to local
+    cmds:
+      - ./scripts/utils/copy_confounds_to_local.sh
+
+  # Cleanup
+  cleanup_leftovers:
+    desc: Clean .DS_Store and empty directories
+    cmds:
+      - ./scripts/utils/cleanup_leftovers.sh
+
+  # DICOM compression
+  dicom_zip:
+    desc: Zip DICOM folders
+    cmds:
+      - ./scripts/compress_and_merge_dicom.sh {{.CLI_ARGS}}
+
+  # DNN Analysis
+  dnn_features:
+    desc: Extract activation-based DNN PCs (ConvNeXt+CLIP) from food images
+    cmds:
+      - cmd: |
+          echo "Extracting activation-based DNN PCs (ConvNeXt+CLIP) from food images"
+          echo "Processing 896 images through ~64 layers (37 ConvNeXt + 27 CLIP)"
+          echo "Output: ~57,344 rows (896 images × 64 layers)"
+        silent: false
+      - uv run --project scripts/dnn_analysis/preprocess python scripts/dnn_analysis/preprocess/extract_dnn_pcs.py
+        --convnext-checkpoint {{.ROOT_DIR}}/DNNs_model/v9/res_L/convnext_base_regression.pth
+        --image-dir {{.ROOT_DIR}}/Database
+        --out-dir {{.ROOT_DIR}}/data_images/dnn_pmods
+
+  dnn_raw_features:
+    desc: Extract raw DNN features (all channels, no PCA) for encoding model analysis
+    cmds:
+      - cmd: |
+          echo "Extracting raw DNN features (all channels, no PCA)"
+          echo "Processing 896 images through selected layers"
+          echo "Output: ~10 layers per model with all channels preserved"
+        silent: false
+      - uv run --project scripts/dnn_analysis/preprocess python scripts/dnn_analysis/preprocess/extract_dnn_raw_features.py
+        --convnext-checkpoint DNNs_model/v9/res_L/convnext_base_regression.pth
+        --image-dir Database
+        --out-dir data_images/dnn_raw_features
+
+  # Hierarchical DNN Analysis (Design N v3)
+  hierarchical_extract_global_pcs:
+    desc: Extract global common PCs across all layers (step 1 of preprocessing)
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/preprocess/extract_global_pcs.py --source convnext
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/preprocess/extract_global_pcs.py --source clip
+
+  hierarchical_extract_layer_pcs:
+    desc: Extract layer-specific PCs orthogonalized to global (step 2 of preprocessing)
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/preprocess/extract_layer_pcs.py --source convnext
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/preprocess/extract_layer_pcs.py --source clip
+
+  hierarchical_create_pcs:
+    desc: Create 3-level hierarchical PCs (Global, Shared, Layer-Specific) with orthogonalization
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/preprocess/create_pcs.py --source convnext
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/preprocess/create_pcs.py --source clip
+
+  hierarchical_preprocess_all:
+    desc: Run full preprocessing pipeline (extract_global -> extract_layer -> create_pcs)
+    cmds:
+      - task: hierarchical_extract_global_pcs
+      - task: hierarchical_extract_layer_pcs
+      - task: hierarchical_create_pcs
+
+  hierarchical_glm:
+    desc: Run hierarchical DNN GLM for all subjects
+    cmds:
+      - bash scripts/dnn_analysis/hierarchical/first_level/run_all_subjects.sh
+
+  hierarchical_glm_daywise:
+    desc: Run hierarchical DNN GLM with day-wise PMODs for all subjects
+    cmds:
+      - bash scripts/dnn_analysis/hierarchical/first_level/run_all_daywise.sh
+
+  hierarchical_second_level:
+    desc: Run second-level analysis for hierarchical DNN GLM
+    cmds:
+      - matlab -batch "cd('/Users/yuhiaoki/dev/hit/food-brain/scripts/dnn_analysis/hierarchical/second_level'); create_second_level('convnext'); create_second_level('clip');"
+
+  hierarchical_rerun_contrasts:
+    desc: Rerun contrasts for all subjects (adds individual Shared F-contrasts and Layer+Shared+Global)
+    cmds:
+      - matlab -batch "cd('/Users/yuhiaoki/dev/hit/food-brain/scripts/dnn_analysis/hierarchical/first_level'); run('rerun_all_contrasts.m');"
+
+  hierarchical_second_level_v4:
+    desc: Run second-level analysis with new contrasts (individual Shared pairs + Layer+Shared+Global)
+    cmds:
+      - matlab -batch "cd('/Users/yuhiaoki/dev/hit/food-brain/scripts/dnn_analysis/hierarchical/second_level'); create_second_level_hierarchical('convnext');"
+      - matlab -batch "cd('/Users/yuhiaoki/dev/hit/food-brain/scripts/dnn_analysis/hierarchical/second_level'); create_second_level_hierarchical('clip');"
+
+  hierarchical_full_pipeline:
+    desc: Full hierarchical analysis pipeline (PC extraction -> GLM -> second-level -> SVC -> visualization)
+    cmds:
+      - task: hierarchical_create_pcs
+      - task: hierarchical_glm
+      - task: hierarchical_second_level_v4
+      - task: dnn_roi_svc
+      - task: dnn_roi_eta2p_ci
+      - task: dnn_roi_viz
+
+  hierarchical_from_contrasts:
+    desc: Pipeline from contrast rerun (skip PC extraction and GLM)
+    cmds:
+      - task: hierarchical_rerun_contrasts
+      - task: hierarchical_second_level_v4
+      - task: dnn_roi_svc
+      - task: dnn_roi_eta2p_ci
+      - task: dnn_roi_viz
+
+  hierarchical_viz:
+    desc: Visualize hierarchical DNN GLM results
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/visualization/visualize_results.py --source convnext
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/visualization/visualize_results.py --source clip
+
+  hierarchical_viz_shared:
+    desc: Visualize hierarchical DNN GLM results with Shared PCs
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/visualization/visualize_results.py --source convnext --include-shared
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/visualization/visualize_results.py --source clip --include-shared
+
+  hierarchical_viz_global:
+    desc: Visualize hierarchical DNN GLM results with Global and Shared
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/visualization/visualize_results.py --source convnext --include-global
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/hierarchical/visualization/visualize_results.py --source clip --include-global
+
+  # Layerwise DNN Analysis (Design I)
+  # 各層を個別にGLM分析。Hierarchical分析の前身。
+  layerwise_glm:
+    desc: Run layerwise DNN GLM for all subjects
+    cmds:
+      - matlab -batch "cd('/Users/yuhiaoki/dev/hit/food-brain/scripts/dnn_analysis/layerwise/first_level'); run_all_subjects();"
+
+  layerwise_second_level:
+    desc: Run second-level analysis for layerwise DNN GLM
+    cmds:
+      - matlab -batch "cd('/Users/yuhiaoki/dev/hit/food-brain/scripts/dnn_analysis/layerwise/second_level'); create_second_level('convnext'); create_second_level('clip');"
+
+  layerwise_viz:
+    desc: Visualize layerwise DNN GLM results
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/layerwise/visualization/visualize_results.py --source both
+
+  # Common DNN Visualization
+  dnn_cluster_fwe_compute:
+    desc: Compute cluster-level FWE for DNN hierarchical analysis
+    cmds:
+      - matlab -batch "addpath('scripts/dnn_analysis/common/utils'); run_cluster_fwe('hierarchical_v3', 'convnext');"
+      - matlab -batch "addpath('scripts/dnn_analysis/common/utils'); run_cluster_fwe('hierarchical_v3', 'clip');"
+
+  cluster_fwe_viz:
+    desc: Visualize cluster-level FWE results
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/common/visualization/visualize_cluster_fwe.py --design hierarchical --source convnext
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/common/visualization/visualize_cluster_fwe.py --design hierarchical --source clip
+
+  # ROI Analysis
+  create_harvard_oxford_rois:
+    desc: Create Harvard-Oxford ROI masks for analysis
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/roi/create_harvard_oxford_rois.py
+
+  dnn_roi_analysis:
+    desc: ROI analysis with significant voxel counts (hierarchical)
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/roi/roi_analysis_hierarchical.py
+
+  dnn_roi_svc:
+    desc: Run Small Volume Correction (SVC) for hierarchical DNN ROI analysis
+    cmds:
+      - matlab -batch "addpath('scripts/dnn_analysis/roi'); run_svc_hierarchical;"
+
+  dnn_roi_eta2p_ci:
+    desc: Calculate η²p with 95% CI for SVC results
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/roi/calculate_eta2p_ci.py
+
+  dnn_roi_heatmap:
+    desc: Create ROI heatmap for hierarchical DNN analysis
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/roi/create_simple_heatmap.py
+
+  dnn_roi_barplot:
+    desc: Create ROI grid barplot for hierarchical DNN analysis
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/roi/create_grid_barplot.py
+
+  dnn_roi_beta_rms:
+    desc: Extract beta RMS values for ROI analysis
+    cmds:
+      - matlab -batch "addpath('scripts/dnn_analysis/roi'); extract_beta_rms;"
+
+  dnn_roi_viz:
+    desc: Create ROI beta RMS barplot visualization
+    cmds:
+      # - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/roi/create_simple_heatmap.py --all
+      # - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/roi/create_grid_barplot.py --all
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/roi/visualize_beta_rms.py --all
+
+  # =============================================================================
+  # Future Work: MVPA/Searchlight Analysis (スクリプト未実装)
+  # =============================================================================
+  # 以下の分析は将来的に実装予定：
+  #
+  # 1. RSA Searchlight: ボクセルごとのRSA（DNN層との類似性マップ）
+  #    - searchlight_dnn_analysis.py --analysis rsa --radius 5.0
+  #
+  # 2. Layer Classification Searchlight: どの層グループに最も似ているか分類
+  #    - searchlight_dnn_analysis.py --analysis classify_layer --radius 5.0
+  #
+  # 3. Encoding Model Searchlight: DNN特徴量から脳活動を予測
+  #    - encoding_searchlight.py (Lasso/Ridge regression)
+  #    - LSS beta推定値を使用
+  #
+  # 参考: Kriegeskorte et al. (2008), Naselaris et al. (2011)
+  # =============================================================================
+
+  # RSA Analysis (ROI-centered with double centering)
+  rsa_roi_centered:
+    desc: Run ROI-centered RSA with NC (31 ROIs, 3 models, double centering)
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/rsa/calc_rsa_roi_centered.py
+
+  rsa_roi_centered_viz:
+    desc: Visualize ROI-centered RSA results (comparison and summary plots)
+    cmds:
+      - uv run --project scripts/dnn_analysis python scripts/dnn_analysis/rsa/visualize_roi_centered.py
+
+  rsa_all:
+    desc: Run full RSA pipeline (calculation + visualization)
+    cmds:
+      - task: rsa_roi_centered
+      - task: rsa_roi_centered_viz

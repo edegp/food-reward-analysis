@@ -1,0 +1,55 @@
+freesurfer/
+
+**/log/
+*.log
+
+fMRIPrep/
+fMRIprep/
+Database/
+
+results/
+results
+
+Food_Behavior/
+
+*.docx
+
+.env*
+
+DNNs_model
+
+.DS_Store
+*.zip
+
+# Python virtual environments
+.venv/
+__pycache__/
+*.pyc
+
+# Poetry/uv lock files (regenerable)
+uv.lock
+poetry.lock
+
+# DNN raw features (large binary files)
+data_images/**/*.npz
+
+# DNN pmod intermediate outputs
+data_images/dnn_pmods/**/*.csv
+data_images/dnn_pmods/**/*.png
+data_images/dnn_pmods/**/*.txt
+data_images/dnn_pmods/3level/
+data_images/dnn_pmods/orthogonalized/
+data_images/dnn_pmods/per_layer/
+
+# Other data files
+data_images/food_value.csv
+
+# ROI masks (regenerable from atlases)
+rois/
+
+# Jupyter notebooks (exploratory)
+notebook/
+
+# Script-local data
+scripts/dnn_analysis/data_images/
+

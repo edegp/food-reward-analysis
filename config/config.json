@@ -1,0 +1,43 @@
+{
+  "descriptions": [
+    {
+      "datatype": "anat",
+      "suffix": "T1w",
+      "criteria": {
+        "SeriesDescription": "t1_mprage_sag_p2_iso*"
+      },
+      "customLabels": "",
+      "sidecarChanges": {}
+    },
+    {
+      "datatype": "fmap",
+      "suffix": "dir-PA_epi",
+      "criteria": {
+        "SeriesDescription": "SEField1_PA*"
+      },
+      "customLabels": "",
+      "sidecarChanges": {}
+    },
+    {
+      "datatype": "fmap",
+      "suffix": "dir-AP_epi",
+      "criteria": {
+        "SeriesDescription": "SEField1_AP*"
+      },
+      "customLabels": "",
+      "sidecarChanges": {}
+    },
+    {
+      "datatype": "func",
+      "modalityLabel": "bold",
+      "suffix": "task-pt_bold",
+      "criteria": {
+        "SeriesDescription": "BOLD_Food"
+      },
+      "customLabels": "",
+      "sidecarChanges": {
+        "TaskName": "pt"
+      }
+    }
+  ]
+}
