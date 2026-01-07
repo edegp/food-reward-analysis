@@ -1,3 +1,4 @@
+#import "@preview/subpar:0.2.2"
 
 // ------------------------------------------------------------------------------
 // 表紙の設定
@@ -35,25 +36,25 @@
     // 論文タイプ
     #text(size: 1.5em, weight: "bold", font: "BIZ UDPGothic")[#thesis_type]
 
-    #v(6em)
+    #v(4em)
 
     // 日本語タイトル
     #text(size: 2em, weight: "bold", font: "BIZ UDPGothic")[#title]
 
-    #v(16em)
+    #v(12em)
 
     // 日本語著者名
-    #text(size: 1.3em, font: "BIZ UDPMincho")[#author]
+    #text(size: 1.5em, weight: "bold", font: "BIZ UDPGothic")[#author]
 
     #v(2em)
 
     // 日本語所属
-    #text(size: 1.3em, font: "BIZ UDPMincho")[#affiliation]
+    #text(size: 1.5em, weight: "bold", font: "BIZ UDPGothic")[#affiliation]
 
     #v(3em)
 
     // 日本語日付
-    #text(size: 1.3em, font: "BIZ UDPMincho")[#date]
+    #text(size: 1.5em, weight: "bold", font: "BIZ UDPGothic")[#date]
 
     // 英語版（オプション）
     #if show_english {
@@ -196,12 +197,56 @@
   }
 }
 
+#let side_by_side(
+  left_img,
+  left_label,
+  right_img,
+  right_label,
+  main_caption,
+  columns: 2,
+  gutter: 12%,
+  figure_supplement: "図",
+) = {
+  subpar.grid(
+    columns: columns,
+    supplement: figure_supplement,
+    numbering-sub: "a.",
+    align: top,
+    show-sub-caption: (num, it) => {
+      set text(size: 0.8em)
+      set align(left)
+      text(weight: "bold", num)
+    },
+    show-sub: it => {
+      set figure.caption(position: top)
+      it
+    },
+    figure(
+      left_img,
+      supplement: figure_supplement,
+      caption: [],
+    ),
+    left_label,
+    figure(
+      right_img,
+      supplement: figure_supplement,
+      caption: [],
+    ),
+    right_label,
+
+    caption: main_caption,
+    gutter: gutter,
+  )
+}
+
 #let set_body(body) = {
   // 見出しスタイル設定
   show heading: set text(lang: "en", size: 1em, font: ("Helvetica", "BIZ UDPGothic"), tracking: 0.03em)
   // 見出し１では改ページする
   show heading.where(level: 1): it => {
-    colbreak()
+    if it.body != [コードの公開] {
+      colbreak()
+    }
     block(above: 4em, below: 2em)[
       #it
     ]
