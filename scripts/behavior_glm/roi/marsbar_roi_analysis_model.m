@@ -8,13 +8,10 @@ if nargin < 1
     model_name = 'glm_001p_6';
 end
 
-addpath('/Users/yuhiaoki/spm');
-addpath('/Users/yuhiaoki/spm/toolbox/marsbar');
-
-% Initialize MarsBar
+% Initialize MarsBar (requires SPM and MarsBar on MATLAB path)
 marsbar('on');
 
-%% Define paths
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
 script_dir = fileparts(mfilename('fullpath'));
 root_dir = fullfile(script_dir, '..', '..', '..');
 

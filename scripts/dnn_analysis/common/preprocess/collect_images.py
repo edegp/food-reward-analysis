@@ -11,8 +11,9 @@ import pandas as pd
 from pathlib import Path
 from collections import Counter
 
-# Setup paths
-behavior_dir = Path('/Users/yuhiaoki/dev/hit/food-brain/Food_Behavior')
+# Setup paths (4 levels up from this script: scripts/dnn_analysis/common/preprocess/)
+ROOT = Path(__file__).resolve().parents[4]
+behavior_dir = ROOT / 'Food_Behavior'
 subjects = [f'sub-{i:03d}' for i in range(1, 21)]  # sub-001 to sub-020
 
 # Collect all image IDs
@@ -73,7 +74,7 @@ print()
 print("="*70)
 
 # Save unique image list
-output_file = Path('/Users/yuhiaoki/dev/hit/food-brain/data_images/used_image_ids.txt')
+output_file = ROOT / 'data_images' / 'used_image_ids.txt'
 output_file.parent.mkdir(parents=True, exist_ok=True)
 
 with open(output_file, 'w') as f:

@@ -1,7 +1,10 @@
 %% Plot ROI Analysis Results with Effect Size (Cohen's d) on Y-axis
 % Cohen's d = t / sqrt(n) for one-sample t-test
+% (Requires SPM on MATLAB path)
 
-addpath('/Users/yuhiaoki/spm');
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
 
 %% ROI data from analysis
 roi_names = {'vmPFC', 'OFC medial', 'OFC lateral', 'Striatum L', 'Striatum R', 'Insula', 'Amygdala'};
@@ -67,7 +70,7 @@ text(6.5, 0.71, '0.5 = Medium', 'FontSize', 9, 'Color', [0 0.5 0]);
 text(6.5, 0.64, '0.8 = Large', 'FontSize', 9, 'Color', 'r');
 
 % Save figure
-output_dir = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis';
+output_dir = fullfile(root_dir, 'results', 'roi_analysis');
 if ~exist(output_dir, 'dir')
     mkdir(output_dir);
 end

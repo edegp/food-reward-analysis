@@ -1,12 +1,14 @@
 %% ROI Analysis - Second-level Beta Values
 % Extract beta values from second-level analysis
+% (Requires SPM on MATLAB path)
 
-addpath('/Users/yuhiaoki/spm');
-
-%% Define paths
-second_level_dir = '/Users/yuhiaoki/dev/hit/food-brain/results/second_level_analysis/glm_rgb_nutri/ImagexValue_20251221_145043';
-roi_dir = '/Users/yuhiaoki/dev/hit/food-brain/rois/AAL2';
-output_dir = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis';
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
+% Note: Update the timestamp directory as needed
+second_level_dir = fullfile(root_dir, 'results', 'second_level_analysis', 'glm_rgb_nutri', 'ImagexValue_20251221_145043');
+roi_dir = fullfile(root_dir, 'rois', 'AAL2');
+output_dir = fullfile(root_dir, 'results', 'roi_analysis');
 
 %% Load second-level beta image
 beta_file = fullfile(second_level_dir, 'beta_0001.nii');

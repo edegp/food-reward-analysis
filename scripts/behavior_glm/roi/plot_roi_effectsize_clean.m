@@ -1,7 +1,10 @@
 %% Plot ROI Analysis Results - Clean Design (Significant ROIs only)
 % Effect Size (Cohen's d) on Y-axis
+% (Requires SPM on MATLAB path)
 
-addpath('/Users/yuhiaoki/spm');
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
 
 %% ROI data - only significant ROIs (T > 1.70, p < 0.05)
 roi_names = {'vmPFC', 'mOFC', 'L-Striatum', 'R-Striatum', 'Insula'};
@@ -45,7 +48,7 @@ ylim([0, 0.7]);
 set(ax, 'Box', 'off', 'TickDir', 'out', 'LineWidth', 1);
 
 % Save figure
-output_dir = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis';
+output_dir = fullfile(root_dir, 'results', 'roi_analysis');
 
 print(fig, fullfile(output_dir, 'roi_effectsize_clean.png'), '-dpng', '-r300');
 fprintf('Figure saved to: %s\n', fullfile(output_dir, 'roi_effectsize_clean.png'));

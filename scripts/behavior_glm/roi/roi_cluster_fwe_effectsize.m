@@ -1,13 +1,14 @@
 %% ROI Effect Size with Cluster-level FWE mask
 % Use same ROIs but only include voxels that survive cluster-level FWE
+% (Requires SPM on MATLAB path)
 
-addpath('/Users/yuhiaoki/spm');
-
-%% Define paths
-cluster_file = '/Users/yuhiaoki/dev/hit/food-brain/results/behavior_glm/cluster_fwe/glm_001p_6/ImagexValue_clusterFWE.nii';
-first_level_base = '/Users/yuhiaoki/dev/hit/food-brain/results/first_level_analysis';
-roi_dir = '/Users/yuhiaoki/dev/hit/food-brain/rois/AAL2';
-output_dir = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis';
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
+cluster_file = fullfile(root_dir, 'results', 'behavior_glm', 'cluster_fwe', 'glm_001p_6', 'ImagexValue_clusterFWE.nii');
+first_level_base = fullfile(root_dir, 'results', 'first_level_analysis');
+roi_dir = fullfile(root_dir, 'rois', 'AAL2');
+output_dir = fullfile(root_dir, 'results', 'roi_analysis');
 
 %% Load cluster FWE mask
 V_cluster = spm_vol(cluster_file);

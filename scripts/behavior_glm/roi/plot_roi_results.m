@@ -1,7 +1,10 @@
 %% Plot ROI Analysis Results as Bar Chart
 % No Statistics Toolbox required
+% (Requires SPM on MATLAB path)
 
-addpath('/Users/yuhiaoki/spm');
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
 
 %% ROI data from analysis
 roi_names = {'vmPFC', 'OFC medial', 'OFC lateral', 'Striatum L', 'Striatum R', 'Insula', 'Amygdala'};
@@ -55,7 +58,7 @@ grid on;
 box off;
 
 % Save figure
-output_dir = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis';
+output_dir = fullfile(root_dir, 'results', 'roi_analysis');
 if ~exist(output_dir, 'dir')
     mkdir(output_dir);
 end

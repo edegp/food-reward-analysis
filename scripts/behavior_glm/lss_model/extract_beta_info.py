@@ -70,7 +70,8 @@ def extract_beta_info_from_spm(spm_file: Path) -> pd.DataFrame:
 
 
 def main():
-    root_dir = Path('/Users/yuhiaoki/dev/hit/food-brain')
+    # Project root (3 levels up from this script: scripts/behavior_glm/lss_model/)
+    root_dir = Path(__file__).resolve().parents[3]
     result_dir = root_dir / 'results' / 'first_level_analysis'
 
     # Subject list

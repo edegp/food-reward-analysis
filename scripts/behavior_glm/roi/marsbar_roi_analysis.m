@@ -1,14 +1,16 @@
 %% MarsBar ROI Analysis for multiple ROIs
 % Extract mean beta/contrast values from second-level analysis
-addpath('/Users/yuhiaoki/spm');
-addpath('/Users/yuhiaoki/spm/toolbox/marsbar');
+% (Requires SPM and MarsBar on MATLAB path)
 
 % Initialize MarsBar
 marsbar('on');
 
-%% Define paths
-spm_file = '/Users/yuhiaoki/dev/hit/food-brain/results/second_level_analysis/glm_001p_6/ImagexValue_20251204_235425/SPM.mat';
-roi_dir = '/Users/yuhiaoki/dev/hit/food-brain/rois/AAL2';
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
+% Note: Update the timestamp directory as needed
+spm_file = fullfile(root_dir, 'results', 'second_level_analysis', 'glm_001p_6', 'ImagexValue_20251204_235425', 'SPM.mat');
+roi_dir = fullfile(root_dir, 'rois', 'AAL2');
 
 %% Define ROIs to analyze
 roi_names = {

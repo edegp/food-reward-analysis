@@ -9,12 +9,16 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+# Project root (3 levels up from this script: scripts/behavior_glm/visualization/)
+ROOT = Path(__file__).resolve().parents[3]
 
 # Set font for Japanese text
 plt.rcParams['font.family'] = ['Hiragino Sans', 'sans-serif']
 
 # Load second-level beta results
-csv_path = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis/roi_secondlevel_beta.csv'
+csv_path = ROOT / 'results' / 'roi_analysis' / 'roi_secondlevel_beta.csv'
 df = pd.read_csv(csv_path)
 
 roi_names_jp = df['ROI'].tolist()
@@ -22,7 +26,7 @@ mean_beta = df['mean_beta'].values
 se_beta = df['se_beta'].values
 
 # Use first-level p-values for significance coloring
-csv_firstlevel = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis/roi_effectsize_beta.csv'
+csv_firstlevel = ROOT / 'results' / 'roi_analysis' / 'roi_effectsize_beta.csv'
 df_first = pd.read_csv(csv_firstlevel)
 p_values = df_first['p_value'].values
 
@@ -68,7 +72,7 @@ for i, (beta, se) in enumerate(zip(mean_beta, se_beta)):
 plt.tight_layout()
 
 # Save figure
-output_path = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis/roi_effectsize_rgb_nutri_ImagexValue.png'
+output_path = ROOT / 'results' / 'roi_analysis' / 'roi_effectsize_rgb_nutri_ImagexValue.png'
 plt.savefig(output_path, dpi=300, bbox_inches='tight', facecolor='white')
 print(f'Saved: {output_path}')
 

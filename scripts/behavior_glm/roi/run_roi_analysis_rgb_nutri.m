@@ -1,13 +1,14 @@
 %% ROI Analysis for glm_rgb_nutri - ImagexValue contrast
 % Extract mean T values from predefined ROIs and generate barplot
+% (Requires SPM on MATLAB path)
 
-addpath('/Users/yuhiaoki/spm');
-
-%% Define paths
-% Use latest second-level results (with brain mask, first-level also with brain mask)
-spm_file = '/Users/yuhiaoki/dev/hit/food-brain/results/second_level_analysis/glm_rgb_nutri/ImagexValue_20251221_145043/SPM.mat';
-roi_dir = '/Users/yuhiaoki/dev/hit/food-brain/rois/AAL2';
-output_dir = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis';
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
+% Note: Update the timestamp directory as needed
+spm_file = fullfile(root_dir, 'results', 'second_level_analysis', 'glm_rgb_nutri', 'ImagexValue_20251221_145043', 'SPM.mat');
+roi_dir = fullfile(root_dir, 'rois', 'AAL2');
+output_dir = fullfile(root_dir, 'results', 'roi_analysis');
 
 if ~exist(output_dir, 'dir')
     mkdir(output_dir);

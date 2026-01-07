@@ -1,13 +1,14 @@
 %% ROI Effect Size Analysis - Beta-based
 % Extract contrast values from each subject's first-level analysis
 % Calculate effect size (Cohen's d) from beta values
+% (Requires SPM on MATLAB path)
 
-addpath('/Users/yuhiaoki/spm');
-
-%% Define paths
-first_level_base = '/Users/yuhiaoki/dev/hit/food-brain/results/first_level_analysis';
-roi_dir = '/Users/yuhiaoki/dev/hit/food-brain/rois/AAL2';
-output_dir = '/Users/yuhiaoki/dev/hit/food-brain/results/roi_analysis';
+%% Define paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
+first_level_base = fullfile(root_dir, 'results', 'first_level_analysis');
+roi_dir = fullfile(root_dir, 'rois', 'AAL2');
+output_dir = fullfile(root_dir, 'results', 'roi_analysis');
 
 if ~exist(output_dir, 'dir')
     mkdir(output_dir);

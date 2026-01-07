@@ -203,19 +203,23 @@ def create_simple_perspective(image_path, output_path, depth=0.6):
 
 
 if __name__ == "__main__":
-    input_image = "/Users/yuhiaoki/dev/hit/food-brain/Database/0002.jpg"
+    from pathlib import Path
+    # Project root (3 levels up from this script: scripts/utils/paper/)
+    ROOT = Path(__file__).resolve().parents[3]
+
+    input_image = ROOT / "Database" / "0002.jpg"
 
     # CNN図のような遠近法効果（枠線付き）
     create_cnn_style_perspective(
-        input_image,
-        "/Users/yuhiaoki/dev/hit/food-brain/Database/0002_cnn_style.png",
+        str(input_image),
+        str(ROOT / "Database" / "0002_cnn_style.png"),
         depth=1.0  # 奥行きなし（右側も元のサイズのまま）
     )
 
     # シンプルな遠近法効果（影なし）
     create_simple_perspective(
-        input_image,
-        "/Users/yuhiaoki/dev/hit/food-brain/Database/0002_perspective.png",
+        str(input_image),
+        str(ROOT / "Database" / "0002_perspective.png"),
         depth=1.0  # 奥行きなし
     )
 

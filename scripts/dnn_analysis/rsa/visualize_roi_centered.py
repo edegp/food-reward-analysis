@@ -13,8 +13,9 @@ from pathlib import Path
 from scipy import stats
 import argparse
 
-ROOT = Path("/Users/yuhiaoki/dev/hit/food-brain")
-OUTPUT_DIR = Path("/Volumes/Extreme Pro/hit/food-brain/results/rsa_analysis/roi_centered")
+# Project root (3 levels up from this script: scripts/dnn_analysis/rsa/)
+ROOT = Path(__file__).resolve().parents[3]
+OUTPUT_DIR = ROOT / "results" / "rsa_analysis" / "roi_centered"
 PAPER_IMAGE_DIR = ROOT / "paper" / "image"
 
 # Japanese ROI names mapping

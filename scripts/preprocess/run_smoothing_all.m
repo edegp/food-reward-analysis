@@ -11,9 +11,9 @@ addpath(script_dir);
 spm('Defaults', 'fMRI');
 spm_jobman('initcfg');
 
-% Paths
-root_dir = "/Users/yuhiaoki/dev/hit/food-brain/";
-derivatives_dir = '/Users/yuhiaoki/dev/hit/food-brain/fMRIprep/derivatives';
+% Paths (2 levels up from this script: scripts/preprocess/)
+root_dir = fullfile(script_dir, '..', '..');
+derivatives_dir = fullfile(root_dir, 'fMRIprep', 'derivatives');
 output_base = fullfile(root_dir, 'fMRIprep', 'smoothed_local');
 
 % Create output directory

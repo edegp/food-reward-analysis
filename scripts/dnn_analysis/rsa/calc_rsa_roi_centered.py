@@ -18,10 +18,11 @@ from collections import Counter
 import pandas as pd
 from tqdm import tqdm
 
-ROOT = Path("/Users/yuhiaoki/dev/hit/food-brain")
-LSS_BASE = Path("/Volumes/Extreme Pro/hit/food-brain/results/first_level_analysis")
+# Project root (3 levels up from this script: scripts/dnn_analysis/rsa/)
+ROOT = Path(__file__).resolve().parents[3]
+LSS_BASE = ROOT / "results" / "first_level_analysis"
 ROI_DIR = ROOT / "rois" / "HarvardOxford"
-OUTPUT_DIR = Path("/Volumes/Extreme Pro/hit/food-brain/results/rsa_analysis/roi_centered")
+OUTPUT_DIR = ROOT / "results" / "rsa_analysis" / "roi_centered"
 
 # All Harvard-Oxford ROIs
 ALL_ROIS = [

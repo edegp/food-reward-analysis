@@ -161,27 +161,31 @@ def create_isometric_view(image_path, output_path):
 
 
 if __name__ == "__main__":
-    input_image = "/Users/yuhiaoki/dev/hit/food-brain/Database/0002.jpg"
+    from pathlib import Path
+    # Project root (3 levels up from this script: scripts/utils/paper/)
+    ROOT = Path(__file__).resolve().parents[3]
+
+    input_image = ROOT / "Database" / "0002.jpg"
 
     # 1. 基本的なシアー変換（逆方向）
     apply_shear_transform(
-        input_image,
-        "/Users/yuhiaoki/dev/hit/food-brain/Database/0002_shear.png",
+        str(input_image),
+        str(ROOT / "Database" / "0002_shear.png"),
         shear_x=-0.3,
         shear_y=-0.1
     )
 
     # 2. 3D効果（遠近法）
     create_3d_effect(
-        input_image,
-        "/Users/yuhiaoki/dev/hit/food-brain/Database/0002_3d.png",
+        str(input_image),
+        str(ROOT / "Database" / "0002_3d.png"),
         angle=20
     )
 
     # 3. アイソメトリックビュー
     create_isometric_view(
-        input_image,
-        "/Users/yuhiaoki/dev/hit/food-brain/Database/0002_isometric.png"
+        str(input_image),
+        str(ROOT / "Database" / "0002_isometric.png")
     )
 
     print("\n全ての変換が完了しました！")

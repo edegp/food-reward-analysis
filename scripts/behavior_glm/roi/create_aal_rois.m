@@ -11,10 +11,14 @@ function create_aal_rois()
 
 clearvars; close all; clc;
 
-% Paths
-spm_dir = '/Users/yuhiaoki/spm';
+% Paths (3 levels up from this script: scripts/behavior_glm/roi/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..');
+% Note: SPM path is assumed to be on MATLAB path
+% Atlas file location depends on SPM installation
+spm_dir = fileparts(which('spm'));
 atlas_file = fullfile(spm_dir, 'toolbox', 'bspmview', 'supportfiles', 'AAL2_Atlas_Map.nii');
-output_dir = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'rois', 'AAL2');
+output_dir = fullfile(root_dir, 'rois', 'AAL2');
 
 % Create output directory
 if ~exist(output_dir, 'dir')

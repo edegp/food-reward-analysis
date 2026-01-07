@@ -29,8 +29,9 @@ if isnumeric(sub_id)
     sub_id = sprintf('%03d', sub_id);
 end
 
-root_dir = '/Users/yuhiaoki/dev/hit/food-brain';
-addpath('/Users/yuhiaoki/spm');
+% Project root (4 levels up from this script: scripts/dnn_analysis/hierarchical/first_level/)
+script_dir = fileparts(mfilename('fullpath'));
+root_dir = fullfile(script_dir, '..', '..', '..', '..');
 addpath(fullfile(root_dir, 'scripts', 'suzuki'));
 addpath(fullfile(root_dir, 'scripts', 'common', 'first_level'));
 
