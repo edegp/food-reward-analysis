@@ -34,8 +34,8 @@ task hierarchical_full_pipeline
 ### 必要なソフトウェア
 | ソフトウェア | バージョン | 用途 |
 |-------------|-----------|------|
-| MATLAB | R2024b以降 | SPM12によるGLM解析 |
-| SPM12 | 最新版 | fMRI統計解析 |
+| MATLAB | R2024b以降 | SPMによるGLM解析 |
+| SPM25 | 最新版 | fMRI統計解析 |
 | Python | 3.12+ | DNN学習・可視化・RSA分析 |
 | uv | 最新版 | Pythonパッケージ管理 |
 | Task | 最新版 | タスクランナー |
@@ -56,10 +56,10 @@ uv sync
 uv sync --group training
 ```
 
-### SPM12設定
-MATLABパスにSPM12を追加：
+### SPM25設定
+MATLABパスにSPM25を追加：
 ```matlab
-addpath('/path/to/spm12');
+addpath('/path/to/spm25');
 ```
 
 ## DNN Model Training
@@ -285,7 +285,7 @@ task --list  # 全タスク表示
 
 ### MATLABでSPMが見つからない
 ```matlab
-addpath('/path/to/spm12');
+addpath('/path/to/spm25');
 spm('defaults', 'fmri');
 ```
 
@@ -302,7 +302,7 @@ task --list
 
 ## 参考文献
 
-- SPM12: https://www.fil.ion.ucl.ac.uk/spm/
+- SPM: https://www.fil.ion.ucl.ac.uk/spm/
 - fMRIPrep: https://fmriprep.org/
 - nilearn: https://nilearn.github.io/
 - CLIP: https://github.com/openai/CLIP
